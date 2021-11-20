@@ -1,28 +1,43 @@
 import React, { useState, useEffect } from 'react'
-import { ScrollView, Button, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Alert } from 'react-native'
+import { ScrollView, Button, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Alert, Dimensions, ActivityIndicator } from 'react-native'
 import axios from 'axios'
-import Modalview from './ModalView'
-import Searchmodal from './Searchmodal'
-import Icon from 'react-native-vector-icons/Feather'
+import Modalview from './components/ModalView'
+
+
+
+
+
 
 const App = () => {
 
 
+
+  //API FETCHING
+  const [data, setData] = useState([])
   const fetchData = async () => {
     await axios.get(`https://demo3365949.mockable.io/labours`)
       .then((res) => {
         setData(res.data.labours)
+        setLoading(true)
       })
   }
 
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [searchModal, setSearchModal] = useState(false)
 
-  //labourData
-  const [data, setData] = useState([])
+//MODAL VIEW
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  
+
   const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+
+
+
   const [filteredData, setFilteredData] = useState([])
+  const filteredValues = data.filter((i) => (
+    i.toString().toLowerCase().includes(input.toString().toLowerCase())
+  ))
 
 
 
@@ -36,13 +51,18 @@ const App = () => {
     const filtered = data.filter((i) => {
       return (
         i.name === input
-
       )
     })
     console.log(filtered);
     setFilteredData(filtered)
     setSearchModal(true)
   }
+
+
+
+
+
+
 
 
   useEffect(() => {
@@ -55,53 +75,58 @@ const App = () => {
     <ScrollView contentContainerStyle={styles.container}>
 
 
+      
       {isModalOpen &&
         <Modalview value={{ isModalOpen, setIsModalOpen, }} />
       }
-      
-      <Text style={styles.header}>
-        Labours
-      </Text>
-      <View style={{ display: 'flex', flexDirection: 'row', width: '90%' }}>
-        <TextInput style={styles.searchbar} placeholder="Search" placeholderTextColor="#818181"
-          onChangeText={handleChange}
-        />
-        <View style={{ marginTop: 16, marginLeft: 2, width: 40, backgroundColor: '#91F3CF', borderRadius: 9, justifyContent: 'center', alignItems: 'center' }} >
-          <Icon name="search" size={30} color="#000" style={{ height: 30, alignSelf: 'center' }} onPress={handleSearch} />
+
+      {loading ?
+
+
+        <View style={styles.container}>
+          <Text style={styles.header}>
+            Labours
+          </Text>
+
+          <TextInput style={styles.searchbar} placeholder="Search" placeholderTextColor="#818181"
+            onChangeText={handleChange}
+          />
+
+          <View style={styles.labourView}>
+
+            {data &&
+              data.filter((i) => {
+                if (input == '') {
+                  return i.name
+                }
+                else if (i.name.toString().toLowerCase().includes(input.toString().toLowerCase())) {
+                  return i.name
+                }
+              }).map((item) => {
+                return (
+                  <TouchableOpacity key={item.id} onPress={() => { setIsModalOpen(true) }}>
+                    <View style={styles.labours}>
+                      <Text style={styles.labourName}>{item.name}</Text>
+                      <Text style={styles.labourQuantity}>Quantity - {item.quantity} {item.unit}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+              })
+            }
+
+
+          </View>
         </View>
-      </View>
 
-      {/* <TouchableOpacity style={{ height: 30, width: 250, backgroundColor: '#ddd' }}
-        onPress={handleSearch}
-      >
-        <Text>
-          search
-        </Text>
-      </TouchableOpacity> */}
 
-      {searchModal &&
-        <Searchmodal value={{ searchModal, setSearchModal, filteredData }} />
+        :
+
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size='large' color='#000' />
+        </View>
+
       }
 
-
-      <View style={styles.labourView}>
-
-        {data &&
-          data.map((i) => {
-            return (
-              <TouchableOpacity key={i.id} style={styles.labours} onPress={() => { setIsModalOpen(true) }} activeOpacity={0.8}>
-                <Text style={styles.name}>
-                  {i.name}
-                </Text>
-                <Text style={styles.quantity}>
-                  Quantity - {i.quantity} {i.unit}
-                </Text>
-              </TouchableOpacity>
-            )
-          })
-        }
-
-      </View>
 
 
     </ScrollView>
@@ -113,7 +138,9 @@ export default App
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
   },
 
   header: {
@@ -138,7 +165,7 @@ const styles = StyleSheet.create({
 
   labourView: {
     marginTop: '5%',
-    width: '100%'
+    width: '100%',
   },
 
   labours: {
@@ -150,6 +177,15 @@ const styles = StyleSheet.create({
     margin: 7,
     borderRadius: 10,
     justifyContent: 'center'
+  },
+
+  labourName: {
+    color: '#fff',
+    fontWeight: 'bold'
+  },
+
+  labourQuantity: {
+    color: '#fff'
   },
 
   name: {

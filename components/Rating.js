@@ -17,7 +17,6 @@ const Rating = () => {
 
     const [defaultRating, setDefaultRating] = useState(0)
     const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5])
-    const [item, setItem] = useState()
 
 
 
@@ -28,19 +27,15 @@ const Rating = () => {
 
     return (
         <View style={{ display: 'flex', flexDirection: 'row', marginBottom: '10%' }}>
+
+
             {
                 maxRating.map((item, key) => {
                     return (
-
                         <TouchableOpacity activeOpacity={0.7} key={item} onPress={() => { setDefaultRating(item)}}>
-                            {/* <Image source={item <= defaultRating ? { uri: starFilled } : { uri: starBorder }}>
-                            </Image> */}
                             <Icon name={item <= defaultRating ? 'star' : 'staro'} size={25} color='#FFB81C' style={{ margin: 3 }} />
 
                         </TouchableOpacity>
-
-
-
                     )
                 })
             }
@@ -52,6 +47,8 @@ const Rating = () => {
                  /{maxRating.length}
             </Text>
             </View>
+
+            
         </View>
     )
 }
