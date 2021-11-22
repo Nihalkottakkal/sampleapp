@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
 
   modalText: {
     marginBottom: 15,
+    color: '#000'
   },
 
   rating: {

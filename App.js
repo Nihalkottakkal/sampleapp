@@ -24,10 +24,10 @@ const App = () => {
 
 
 
-//MODAL VIEW
+  //MODAL VIEW
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  
+
 
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,6 +35,7 @@ const App = () => {
 
 
   const [filteredData, setFilteredData] = useState([])
+
   const filteredValues = data.filter((i) => (
     i.toString().toLowerCase().includes(input.toString().toLowerCase())
   ))
@@ -75,7 +76,7 @@ const App = () => {
     <ScrollView contentContainerStyle={styles.container}>
 
 
-      
+
       {isModalOpen &&
         <Modalview value={{ isModalOpen, setIsModalOpen, }} />
       }
@@ -94,7 +95,7 @@ const App = () => {
 
           <View style={styles.labourView}>
 
-            {data &&
+            {filteredValues.length >0 ?
               data.filter((i) => {
                 if (input == '') {
                   return i.name
@@ -111,7 +112,8 @@ const App = () => {
                     </View>
                   </TouchableOpacity>
                 )
-              })
+              }) : <Text style={{color:'#000', alignSelf:'center'}}>no labour found</Text>
+              
             }
 
 
